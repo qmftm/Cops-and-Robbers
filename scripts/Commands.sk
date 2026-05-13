@@ -1,0 +1,3 @@
+command /cnr [<text>]:
+    permission: admin
+    trigger:
