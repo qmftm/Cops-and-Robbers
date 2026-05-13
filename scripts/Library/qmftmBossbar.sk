@@ -1,0 +1,78 @@
+#> 보스바를 생성합니다. 동일한 id가 존재하면 기존 보스바를 삭제 후 새로 생성합니다.
+#> id: 보스바 고유 식별자
+#> name: 보스바 제목
+#> color: 보스바 색상 (기본값: white)
+#> style: 보스바 스타일 (기본값: solid_bar)
+function createBossbar(id: text, name: text, color: color = white, style: bossbar style = solid_bar):
+    if boss bar with id {_id} exists:
+        delete boss bar with id {_id}
+    set {_bar} to boss bar with id {_id} with title {_name} with color {_color} with style {_style}
+
+#> 보스바를 삭제합니다.
+#> id: 보스바 고유 식별자
+function deleteBossbar(id: text):
+    if boss bar with id {_id} exists:
+        delete boss bar with id {_id}
+
+#> 보스바의 제목을 설정합니다.
+#> name: 설정할 제목
+#> id: 보스바 고유 식별자
+function setBossbarName(name: text, id: text):
+    set {_bar} to boss bar with id {_id}
+    set bar title of {_bar} to {_name}
+
+#> 보스바의 색상을 설정합니다.
+#> color: 설정할 색상
+#> id: 보스바 고유 식별자
+function setBossbarColor(color: color, id: text):
+    set {_bar} to boss bar with id {_id}
+    set bar color of {_bar} to {_color}
+
+#> 보스바의 스타일을 설정합니다.
+#> style: 설정할 스타일
+#> id: 보스바 고유 식별자
+function setBossbarStyle(style: bossbar style, id: text):
+    set {_bar} to boss bar with id {_id}
+    set bar style of {_bar} to {_style}
+
+#> 보스바의 진행도를 설정합니다. (0 ~ 100 범위로 자동 보정합니다)
+#> id: 보스바 고유 식별자
+#> progress: 설정할 진행도 (0.0 ~ 100.0)
+function setBossbarProgress(id: text, progress: number):
+    if boss bar with id {_id} exists:
+        set {_bar} to boss bar with id {_id}
+        if {_progress} < 0:
+            set {_progress} to 0
+        if {_progress} > 100:
+            set {_progress} to 100
+        set bar progress of {_bar} to {_progress}
+
+#> 보스바의 진행도를 증가시킵니다.
+#> id: 보스바 고유 식별자
+#> value: 증가시킬 값 (0 ~ 100 기준)
+function addBossbarProgress(id: text, value: number):
+    if boss bar with id {_id} exists:
+        set {_bar} to boss bar with id {_id}
+        set {_current} to bar progress of {_bar}
+        add {_value} to {_current}
+        setBossbarProgress({_id}, {_current})
+
+#> 보스바의 진행도를 감소시킵니다.
+#> id: 보스바 고유 식별자
+#> value: 감소시킬 값 (0 ~ 100 기준)
+function removeBossbarProgress(id: text, value: number):
+    if boss bar with id {_id} exists:
+        set {_bar} to boss bar with id {_id}
+        set {_current} to bar progress of {_bar}
+        remove {_value} from {_current}
+        setBossbarProgress({_id}, {_current})
+
+#> 보스바의 현재 진행도를 반환합니다.
+#> id: 보스바 고유 식별자
+#> 반환값: 현재 진행도 (0.0 ~ 100.0)
+function getBossbarProgress(id: text) :: number:
+    if boss bar with id {_id} exists:
+        set {_bar} to boss bar with id {_id}
+        return bar progress of {_bar}
+    else:
+        return 0

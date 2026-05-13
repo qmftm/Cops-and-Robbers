@@ -1,0 +1,84 @@
+function position(x: integer, y: integer) :: integer:
+    return ({_x} - 1) + ({_y} - 1) * 9
+
+function frameCreate(line: integer, title: text, id: text, background: item, cancel: boolean = true):
+    suppress variable save warning
+    set {frame::%{_id}%} to chest inventory named {_title} with {_line} rows
+    loop {_line} * 9 times:
+        set slot (loop-number - 1) of {frame::%{_id}%} to {_background}
+    set {frame::%{_id}%::cancel} to {_cancel}
+
+function frameItem(x: integer, y: integer, item: item, id: text):
+    set slot position({_x}, {_y}) of {frame::%{_id}%} to {_item}
+
+function frameOpen(p: player, id: text):
+    open {frame::%{_id}%} to {_p}
+    play sound "item.book.page_turn" with volume 0.75 and pitch 0.9 to {_p}
+
+function frameButtonToggle(x: integer, y: integer, id: text, onitem: item, offitem: item, name: text, lore: text, boolean: object):
+    if {_boolean} is not set:
+        set {_item} to {_offitem}
+    if {_boolean} is true:
+        set {_item} to {_onitem}
+    else if {_boolean} is false:
+        set {_item} to {_offitem}
+
+    set {_item} to {_item} with item flag hide attributes
+    set {_item} to {_item} with item flag hide additional tooltip
+    set name of {_item} to {_name}
+    set lore of {_item} to {_lore}
+
+    if {_boolean} is not set:
+        add "&c&l&o!변수에 정보가 없습니다!%nl%&c&l&o[비활성화됨]" to lore of {_item}
+    if {_boolean} is true:
+        add "%nl% &f>> &b활성화됨" to lore of {_item}
+    else if {_boolean} is false:
+        add "%nl% &f>> &8비활성화됨" to lore of {_item}
+
+    set {frame.button::%{_id}%::%position({_x}, {_y})%} to "toggle"
+    set slot position({_x}, {_y}) of {frame::%{_id}%} to {_item}
+
+function frameButtonSlider(x: integer, y: integer, id: text, item: item, name: text, lore: text, number: object, unit: text, shift: integer):
+    set {_item} to {_item} with item flag hide attributes
+    set {_item} to {_item} with item flag hide additional tooltip
+    set name of {_item} to {_name}
+    set lore of {_item} to {_lore}
+
+    if {_number} is not set:
+        add "&c&l&o!변수에 정보가 없습니다!%nl%&c&l&o[비활성화됨]" to lore of {_item}
+
+    if {_number} is set:
+        add "%nl% &f>> &b%{_number}%%{_unit}%" to lore of {_item}
+    
+    add "&6===============" to lore of {_item}
+    add " &e좌클릭 &f: -1%{_unit}%%nl% &e우클릭 &f: +1%{_unit}%" to lore of {_item}
+    if {_shift} is not 0:
+        add " &eShift + 좌클릭 &f: -%{_shift}%%{_unit}%%nl% &eShift + 우클릭 &f: +%{_shift}%%{_unit}%" to lore of {_item}
+    add "&6===============" to lore of {_item}
+    set {frame.slider::%{_id}%::%position({_x}, {_y})%} to {_number}
+    set slot position({_x}, {_y}) of {frame::%{_id}%} to {_item}
+
+function frameToggle(o: object, p: player) :: boolean:
+    play sound "ui.button.click" with volume 0.5 and pitch 0.85 to {_p}
+    if {_o} is true:
+        return false
+    else if {_o} is false:
+        return true
+
+function frameNumber(click: click type, o: object, p: player, shift: integer, min: integer) :: number:
+    if {_shift} is 0:
+        set {_shift} to 1
+    if {_click} is lmb:
+        set {_o} to {_o} - 1
+    else if {_click} is rmb:
+        set {_o} to {_o} + 1
+    else if {_click} is shift+lmb:
+        set {_o} to {_o} - {_shift}
+    else if {_click} is shift+rmb:
+        set {_o} to {_o} + {_shift}
+    else:
+        return {_o}
+    play sound "ui.button.click" with volume 0.5 and pitch 0.9 to {_p}
+    if {_o} < {_min}:
+        set {_o} to {_min}
+    return {_o}
